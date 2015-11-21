@@ -59,6 +59,12 @@ public class MeasureType implements Serializable {
 	@Column(name = "idPerson")
 	private int idPerson;
 
+	//mid for person and for height. ATTENTION : mid depends from person and for type.
+	//it is NOT a primary key! For istance we can have a lot of mid equal to 1, but for different
+	//types and different user
+	@Column(name = "mid")
+	private int mid;
+
 	@Column(name = "type")
 	private String type;
 
@@ -80,6 +86,9 @@ public class MeasureType implements Serializable {
 	public void setType(String type) {this.type = type;}
 	public void setIdPerson(int idPerson){this.idPerson = idPerson;}
 	public int getIdPerson(){return this.idPerson;}
+
+	public int getMid(){return this.mid;}
+	public void setMid(int mid){this.mid = mid;}
 
 	public Date getDate() {return this.date;}
 	public void setDate(Date date) {this.date = date;}
@@ -140,7 +149,6 @@ public class MeasureType implements Serializable {
 		return measures;
 	}
 
-
 	// we make this transient for JAXB to avoid and infinite loop on serialization
 	@XmlTransient
 	public Person getPerson() {return person;}
@@ -179,7 +187,7 @@ public class MeasureType implements Serializable {
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 
 			//Query for this request
-		List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE  l.idMeasureType = "+mid+" AND l.idPerson = "+id+" AND l.type = \"" + type + "\""
+		List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE  l.mid = "+mid+" AND l.idPerson = "+id+" AND l.type = \"" + type + "\""
 			, MeasureType.class).getResultList();
 
 		LifeCoachDao.instance.closeConnections(em);
