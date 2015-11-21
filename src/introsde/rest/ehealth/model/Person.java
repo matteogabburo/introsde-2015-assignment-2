@@ -40,12 +40,12 @@ public class Person implements Serializable {
     @Column(name="birthdate")
     private Date birthdate; 
     
-    // mappedBy must be equal to the name of the attribute in LifeStatus that maps this relation
+    // mappedBy must be equal to the name of the attribute in MeasureType that maps this relation
     @OneToMany(mappedBy="person", cascade=CascadeType.ALL, fetch=FetchType.EAGER)
     private List<MeasureType> measureType;
     
     @XmlElementWrapper(name = "healthProfile")
-    public List<MeasureType> getMeasureType() {return measureType;}
+    public List<MeasureType> getMeasureType() {return MeasureType.getLastMeasures(this.idPerson);}
 
     // add below all the getters and setters of all the private attributes
     // getters
@@ -75,20 +75,16 @@ public class Person implements Serializable {
     }
 
     public static List<Person> getAll() {
-      System.out.println("========================================================");
       EntityManager em = LifeCoachDao.instance.createEntityManager();
-      System.out.println("========================================================");
-
-
+      
       List<Person> list = em.createNamedQuery("Person.findAll", Person.class)
       .getResultList();
-      System.out.println("========================================================");
+      
+      LifeCoachDao.instance.closeConnections(em);
+      return list;
+  }
 
-    LifeCoachDao.instance.closeConnections(em);
-    return list;
-}
-
-public static Person savePerson(Person p) {
+  public static Person savePerson(Person p) {
     EntityManager em = LifeCoachDao.instance.createEntityManager();
     EntityTransaction tx = em.getTransaction();
     tx.begin();

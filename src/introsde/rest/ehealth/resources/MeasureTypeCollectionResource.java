@@ -18,6 +18,7 @@ import javax.ws.rs.core.Request;
 import javax.ws.rs.core.Response;
 import javax.ws.rs.core.UriInfo;
 import javax.ws.rs.PathParam;
+import javax.ws.rs.Path;
 
 @Stateless // only used if the the application is deployed in a Java EE container
 @LocalBean // only used if the the application is deployed in a Java EE container
@@ -51,11 +52,17 @@ public class MeasureTypeCollectionResource {
     @GET
     @Produces({MediaType.TEXT_XML,  MediaType.APPLICATION_JSON , MediaType.APPLICATION_XML })
     public List<MeasureType> getTypes() {
-        System.out.println("===============================0Getting list of types...");
+        System.out.println("Getting list of types...");
         List<MeasureType> types = MeasureType.getMeasureTypeFromPersonIdByType(id ,type);
         return types;
     }
 
+    @Path("{idMeasure}")
+    @GET
+    public List<MeasureType> getPerson(@PathParam("idMeasure") int mid) {
+        List<MeasureType> types = MeasureType.getMeasureTypeFromPersonIdByTypeAndMid(id ,type, mid);
+        return types;
+    }
 
 /*
     public Person getMeasureTypesFromType(String type) {

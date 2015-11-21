@@ -110,7 +110,6 @@ public class PersonResource {
     // (the history) of {measureType} (e.g. weight) for person identified by {id}
     @Path("{type}")
     public MeasureTypeCollectionResource getTypes(@PathParam("type") String type) {
-        System.out.println("=================================================)()()()()(===============================================0");
         return new MeasureTypeCollectionResource(uriInfo, request, id, type);
     }
 }

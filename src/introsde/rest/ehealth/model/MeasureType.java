@@ -22,6 +22,7 @@ import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.OneToMany;
 import java.util.Date;
+import java.util.Iterator;
 
 import javax.persistence.*;
 import javax.xml.bind.annotation.XmlAccessType;
@@ -31,6 +32,8 @@ import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+
+
 /**
  * The persistent class for the "MeasureType" database table.
  * 
@@ -66,12 +69,9 @@ public class MeasureType implements Serializable {
 	@Column(name="date")
 	private Date date;
 
-
 	@ManyToOne
 	@JoinColumn(name="idPerson",referencedColumnName="idPerson", insertable=false, updatable=false)
 	private Person person;
-
-	public MeasureType() {}
 
 	//Getter and setter
 	public int getIdMeasureType() {return this.idMeasureType;}
@@ -86,14 +86,69 @@ public class MeasureType implements Serializable {
 	public float getValue() {return this.value;}
 	public void setValue(float value) {this.value = value;}
 
+
+	public static List<MeasureType> getLastMeasures(int id)
+	{
+		EntityManager em = LifeCoachDao.instance.createEntityManager();
+
+		/*
+			SELECT DISTINCT type
+			FROM MeasureType
+		*/
+			List<String> types = em.createQuery("SELECT DISTINCT m.type FROM MeasureType m", String.class).getResultList();
+
+
+			List<MeasureType> measures = null;
+			Iterator it = types.iterator();
+
+			String type;
+			List<MeasureType> tmp = null;
+			Iterator it2;
+			while(it.hasNext())
+			{
+
+				type = (String)it.next();
+
+				String query = "SELECT l"
+				+" FROM MeasureType l "
+				+" WHERE l.idPerson = " + id
+				+" AND"
+				+" l.type = \""+type+"\""
+				+" AND"
+				+" l.date = (SELECT MAX(m.date)" 
+					+"	FROM MeasureType m"
+					+"	 WHERE m.type = \""+type+"\")";
+
+				tmp = em.createQuery((query), MeasureType.class).getResultList();
+
+				//Very bad method for me, i will change it
+				for(int i = 0; i < tmp.size(); i++)
+					if(measures == null)
+						measures = tmp;
+					else
+						measures.add(tmp.get(i));
+				/*it2 = tmp.iterator();
+				while(it2.hasNext())
+				{
+					if(measures == null)
+						measures = tmp;
+					else
+						measures.add(it2.next());
+				}*/
+			}
+		LifeCoachDao.instance.closeConnections(em);
+		return measures;
+	}
+
+
 	// we make this transient for JAXB to avoid and infinite loop on serialization
 	@XmlTransient
 	public Person getPerson() {return person;}
 	public void setPerson(Person person) {this.person = person;}
-	
-	// Database operations
-	// Notice that, for this example, we create and destroy and entityManager on each operation. 
-	// How would you change the DAO to not having to create the entity manager every time? 
+
+		// Database operations
+		// Notice that, for this example, we create and destroy and entityManager on each operation. 
+		// How would you change the DAO to not having to create the entity manager every time? 
 	public static MeasureType getMeasureTypeById(int idMeasure) {
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 		MeasureType p = em.find(MeasureType.class, idMeasure);
@@ -106,19 +161,32 @@ public class MeasureType implements Serializable {
 		LifeCoachDao.instance.closeConnections(em);
 		return list;
 	}
-	//***********************************************************************************************
-	//Return a list contents all the Measures that have type equal than the the type in the request
+		//***********************************************************************************************
+		//Return a list contents all the Measures that have type equal than the the type in the request
 	public static List<MeasureType> getMeasureTypeFromPersonIdByType(int id, String type) {
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 
-		//Query for this request
+			//Query for this request
 		List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE l.idPerson = "+id+" AND l.type = \"" + type + "\""
-													 , MeasureType.class).getResultList();
+			, MeasureType.class).getResultList();
 
 		LifeCoachDao.instance.closeConnections(em);
 		return measures;
 	}
-    //***********************************************************************************************
+
+	public static List<MeasureType> getMeasureTypeFromPersonIdByTypeAndMid(int id, String type, int mid)
+	{
+		EntityManager em = LifeCoachDao.instance.createEntityManager();
+
+			//Query for this request
+		List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE  l.idMeasureType = "+mid+" AND l.idPerson = "+id+" AND l.type = \"" + type + "\""
+			, MeasureType.class).getResultList();
+
+		LifeCoachDao.instance.closeConnections(em);
+		return measures;
+	}
+
+	    //***********************************************************************************************
 	public static MeasureType saveMeasureType(MeasureType p) {
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 		EntityTransaction tx = em.getTransaction();
@@ -128,7 +196,7 @@ public class MeasureType implements Serializable {
 		LifeCoachDao.instance.closeConnections(em);
 		return p;
 	}
-	
+
 	public static MeasureType updateMeasureType(MeasureType p) {
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 		EntityTransaction tx = em.getTransaction();
@@ -138,7 +206,7 @@ public class MeasureType implements Serializable {
 		LifeCoachDao.instance.closeConnections(em);
 		return p;
 	}
-	
+
 	public static void removeMeasureType(MeasureType p) {
 		EntityManager em = LifeCoachDao.instance.createEntityManager();
 		EntityTransaction tx = em.getTransaction();

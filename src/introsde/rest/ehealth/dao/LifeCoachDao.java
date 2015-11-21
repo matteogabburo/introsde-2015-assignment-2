@@ -13,7 +13,6 @@ public enum LifeCoachDao {
         if (emf!=null) {
             emf.close();
         }
-          System.out.println("ASD");
         emf = Persistence.createEntityManagerFactory("introsde-jpa");
     }
 
