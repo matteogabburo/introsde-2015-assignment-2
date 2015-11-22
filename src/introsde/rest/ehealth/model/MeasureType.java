@@ -1,9 +1,14 @@
 package introsde.rest.ehealth.model;
 
-import introsde.rest.ehealth.dao.LifeCoachDao;
-
 import java.io.Serializable;
+import java.util.Date;
+import java.util.Iterator;
 import java.util.List;
+import java.util.Locale;
+
+import java.text.SimpleDateFormat;
+import java.text.DateFormat;
+import java.text.ParseException;
 
 import javax.persistence.Column;
 import javax.persistence.Entity;
@@ -16,22 +21,12 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.persistence.OneToOne;
-import javax.persistence.Temporal;
-import javax.persistence.OneToMany;
-import java.util.Date;
-import java.util.Iterator;
-
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
-import javax.xml.bind.annotation.XmlElementWrapper;
-import javax.xml.bind.annotation.XmlRootElement;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+import javax.xml.bind.annotation.XmlTransient;
+
+import introsde.rest.ehealth.dao.LifeCoachDao;
 
 
 /**
@@ -90,8 +85,16 @@ public class MeasureType implements Serializable {
 	public int getMid(){return this.mid;}
 	public void setMid(int mid){this.mid = mid;}
 
-	public Date getDate() {return this.date;}
-	public void setDate(Date date) {this.date = date;}
+	public String getDate() {
+		DateFormat df = new SimpleDateFormat("dd/MM/yyyy");
+        // Get the date today using Calendar object.
+		return df.format(this.date);
+	}
+	public void setDate(String d) throws ParseException{
+		DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
+		Date date = format.parse(d);
+		this.date = date;
+	}
 	public float getValue() {return this.value;}
 	public void setValue(float value) {this.value = value;}
 
@@ -108,11 +111,10 @@ public class MeasureType implements Serializable {
 
 
 			List<MeasureType> measures = null;
-			Iterator it = types.iterator();
+			Iterator<String> it = types.iterator();
 
 			String type;
 			List<MeasureType> tmp = null;
-			Iterator it2;
 			while(it.hasNext())
 			{
 
@@ -128,14 +130,14 @@ public class MeasureType implements Serializable {
 					+"	FROM MeasureType m"
 					+"	 WHERE m.type = \""+type+"\")";
 
-				tmp = em.createQuery((query), MeasureType.class).getResultList();
+tmp = em.createQuery((query), MeasureType.class).getResultList();
 
 				//Very bad method for me, i will change it
-				for(int i = 0; i < tmp.size(); i++)
-					if(measures == null)
-						measures = tmp;
-					else
-						measures.add(tmp.get(i));
+for(int i = 0; i < tmp.size(); i++)
+	if(measures == null)
+		measures = tmp;
+	else
+		measures.add(tmp.get(i));
 				/*it2 = tmp.iterator();
 				while(it2.hasNext())
 				{
@@ -143,85 +145,85 @@ public class MeasureType implements Serializable {
 						measures = tmp;
 					else
 						measures.add(it2.next());
-				}*/
+					}*/
+				}
+				LifeCoachDao.instance.closeConnections(em);
+				return measures;
 			}
-		LifeCoachDao.instance.closeConnections(em);
-		return measures;
-	}
 
 	// we make this transient for JAXB to avoid and infinite loop on serialization
-	@XmlTransient
-	public Person getPerson() {return person;}
-	public void setPerson(Person person) {this.person = person;}
+			@XmlTransient
+			public Person getPerson() {return person;}
+			public void setPerson(Person person) {this.person = person;}
 
 		// Database operations
 		// Notice that, for this example, we create and destroy and entityManager on each operation. 
 		// How would you change the DAO to not having to create the entity manager every time? 
-	public static MeasureType getMeasureTypeById(int idMeasure) {
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
-		MeasureType p = em.find(MeasureType.class, idMeasure);
-		LifeCoachDao.instance.closeConnections(em);
-		return p;
-	}
-	public static List<MeasureType> getAll() {
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
-		List<MeasureType> list = em.createNamedQuery("MeasureType.findAll", MeasureType.class).getResultList();
-		LifeCoachDao.instance.closeConnections(em);
-		return list;
-	}
+			public static MeasureType getMeasureTypeById(int idMeasure) {
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
+				MeasureType p = em.find(MeasureType.class, idMeasure);
+				LifeCoachDao.instance.closeConnections(em);
+				return p;
+			}
+			public static List<MeasureType> getAll() {
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
+				List<MeasureType> list = em.createNamedQuery("MeasureType.findAll", MeasureType.class).getResultList();
+				LifeCoachDao.instance.closeConnections(em);
+				return list;
+			}
 		//***********************************************************************************************
 		//Return a list contents all the Measures that have type equal than the the type in the request
-	public static List<MeasureType> getMeasureTypeFromPersonIdByType(int id, String type) {
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
+			public static List<MeasureType> getMeasureTypeFromPersonIdByType(int id, String type) {
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
 
 			//Query for this request
-		List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE l.idPerson = "+id+" AND l.type = \"" + type + "\""
-			, MeasureType.class).getResultList();
+				List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE l.idPerson = "+id+" AND l.type = \"" + type + "\""
+					, MeasureType.class).getResultList();
 
-		LifeCoachDao.instance.closeConnections(em);
-		return measures;
-	}
+				LifeCoachDao.instance.closeConnections(em);
+				return measures;
+			}
 
-	public static List<MeasureType> getMeasureTypeFromPersonIdByTypeAndMid(int id, String type, int mid)
-	{
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
+			public static List<MeasureType> getMeasureTypeFromPersonIdByTypeAndMid(int id, String type, int mid)
+			{
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
 
 			//Query for this request
-		List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE  l.mid = "+mid+" AND l.idPerson = "+id+" AND l.type = \"" + type + "\""
-			, MeasureType.class).getResultList();
+				List<MeasureType> measures = em.createQuery("SELECT l FROM MeasureType l WHERE  l.mid = "+mid+" AND l.idPerson = "+id+" AND l.type = \"" + type + "\""
+					, MeasureType.class).getResultList();
 
-		LifeCoachDao.instance.closeConnections(em);
-		return measures;
-	}
+				LifeCoachDao.instance.closeConnections(em);
+				return measures;
+			}
 
 	    //***********************************************************************************************
-	public static MeasureType saveMeasureType(MeasureType p) {
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-		em.persist(p);
-		tx.commit();
-		LifeCoachDao.instance.closeConnections(em);
-		return p;
-	}
+			public static MeasureType saveMeasureType(MeasureType p) {
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
+				EntityTransaction tx = em.getTransaction();
+				tx.begin();
+				em.persist(p);
+				tx.commit();
+				LifeCoachDao.instance.closeConnections(em);
+				return p;
+			}
 
-	public static MeasureType updateMeasureType(MeasureType p) {
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-		p=em.merge(p);
-		tx.commit();
-		LifeCoachDao.instance.closeConnections(em);
-		return p;
-	}
+			public static MeasureType updateMeasureType(MeasureType p) {
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
+				EntityTransaction tx = em.getTransaction();
+				tx.begin();
+				p=em.merge(p);
+				tx.commit();
+				LifeCoachDao.instance.closeConnections(em);
+				return p;
+			}
 
-	public static void removeMeasureType(MeasureType p) {
-		EntityManager em = LifeCoachDao.instance.createEntityManager();
-		EntityTransaction tx = em.getTransaction();
-		tx.begin();
-		p=em.merge(p);
-		em.remove(p);
-		tx.commit();
-		LifeCoachDao.instance.closeConnections(em);
-	}
-}
+			public static void removeMeasureType(MeasureType p) {
+				EntityManager em = LifeCoachDao.instance.createEntityManager();
+				EntityTransaction tx = em.getTransaction();
+				tx.begin();
+				p=em.merge(p);
+				em.remove(p);
+				tx.commit();
+				LifeCoachDao.instance.closeConnections(em);
+			}
+		}

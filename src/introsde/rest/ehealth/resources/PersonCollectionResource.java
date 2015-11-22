@@ -1,18 +1,16 @@
 package introsde.rest.ehealth.resources;
-import introsde.rest.ehealth.model.Person;
-import introsde.rest.ehealth.model.MeasureType;
-
 import java.io.IOException;
+import java.util.Iterator;
 import java.util.List;
-import javax.ejb.*;
+
+import javax.ejb.LocalBean;
+import javax.ejb.Stateless;
 import javax.persistence.EntityManager;
 import javax.persistence.EntityManagerFactory;
 import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
-import javax.servlet.http.HttpServletResponse;
 import javax.ws.rs.Consumes;
-import javax.ws.rs.FormParam;
 import javax.ws.rs.GET;
 import javax.ws.rs.POST;
 import javax.ws.rs.Path;
@@ -23,7 +21,7 @@ import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
-import java.util.Iterator;
+import introsde.rest.ehealth.model.Person;
 
 @Stateless // will work only inside a Java EE application
 @LocalBean // will work only inside a Java EE application
@@ -54,7 +52,7 @@ public class PersonCollectionResource {
 
 
         System.out.println("People ========================================================");
-        Iterator it;
+        Iterator<Person> it;
         it = people.iterator();
         while(it.hasNext())
             System.out.println(((Person)it.next()).getLastname());
@@ -63,7 +61,7 @@ public class PersonCollectionResource {
         return people;
     }
 
-    // retuns the number of people
+    // returns the number of people
     // to get the total number of records
     @GET
     @Path("count")
@@ -79,7 +77,7 @@ public class PersonCollectionResource {
     @Produces({MediaType.APPLICATION_JSON ,  MediaType.APPLICATION_XML})
     @Consumes({MediaType.APPLICATION_JSON ,  MediaType.APPLICATION_XML})
     public Person newPerson(Person person) throws IOException {
-        System.out.println("Creating new person...");            
+        System.out.println("Creating new person..."); 
         return Person.savePerson(person);
     }
     

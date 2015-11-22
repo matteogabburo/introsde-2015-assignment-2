@@ -1,22 +1,31 @@
 package introsde.rest.ehealth.model;
 
-import introsde.rest.ehealth.dao.LifeCoachDao;
-
 import java.io.Serializable;
+import java.text.DateFormat;
+import java.text.ParseException;
+import java.text.SimpleDateFormat;
 import java.util.Date;
 import java.util.List;
-import java.text.DateFormat;
-import java.text.SimpleDateFormat;
-import java.text.ParseException;
 import java.util.Locale;
-import java.util.Iterator;
 
-import javax.persistence.*;
-import javax.xml.bind.annotation.XmlAccessType;
-import javax.xml.bind.annotation.XmlAccessorType;
-import javax.xml.bind.annotation.XmlElement;
+import javax.persistence.CascadeType;
+import javax.persistence.Column;
+import javax.persistence.Entity;
+import javax.persistence.EntityManager;
+import javax.persistence.EntityTransaction;
+import javax.persistence.FetchType;
+import javax.persistence.GeneratedValue;
+import javax.persistence.Id;
+import javax.persistence.NamedQuery;
+import javax.persistence.OneToMany;
+import javax.persistence.Table;
+import javax.persistence.TableGenerator;
+import javax.persistence.Temporal;
+import javax.persistence.TemporalType;
 import javax.xml.bind.annotation.XmlElementWrapper;
 import javax.xml.bind.annotation.XmlRootElement;
+
+import introsde.rest.ehealth.dao.LifeCoachDao;
 
 @Entity  // indicates that this class is an entity to persist in DB
 @Table(name="Person") // to whole table must be persisted 
@@ -62,11 +71,13 @@ public class Person implements Serializable {
     public void setIdPerson(int idPerson){this.idPerson = idPerson;}
     public void setLastname(String lastname){this.lastname = lastname;}
     public void setFirstname(String firstname){this.firstname = firstname;}
+    public void setMeasureType(List<MeasureType> measureType){this.measureType = measureType;}
     public void setBirthdate(String bd) throws ParseException{
         DateFormat format = new SimpleDateFormat("dd/MM/yyyy", Locale.ENGLISH);
         Date date = format.parse(bd);
         this.birthdate = date;
     }
+
     public static Person getPersonById(int personId) {
         EntityManager em = LifeCoachDao.instance.createEntityManager();
         Person p = em.find(Person.class, personId);
@@ -83,6 +94,18 @@ public class Person implements Serializable {
       LifeCoachDao.instance.closeConnections(em);
       return list;
   }
+
+
+  public static int getMaxId()
+    {
+        MeasureTypeList res = new MeasureTypeList();
+
+        EntityManager em = LifeCoachDao.instance.createEntityManager();     
+        Integer id = em.createQuery("SELECT MAX(m.idPerson) FROM Person m", Integer.class).getSingleResult();
+        LifeCoachDao.instance.closeConnections(em);
+
+        return id.intValue();
+    }
 
   public static Person savePerson(Person p) {
     EntityManager em = LifeCoachDao.instance.createEntityManager();

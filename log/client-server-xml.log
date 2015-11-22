@@ -1,0 +1,12 @@
+Request #1: GET http://127.0.1.1:5700/assignment2/person Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><people><person><birthdate>02/09/1978</birthdate><firstname>Armando</firstname><idPerson>1</idPerson><lastname>Chan</lastname><healthProfile><measureType><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>3</mid><type>height</type><value>12.0</value></measureType></healthProfile></person><person><birthdate>02/09/1978</birthdate><firstname>Jecky</firstname><idPerson>2</idPerson><lastname>Arturo</lastname><healthProfile><measureType><date>29/08/1978</date><idMeasureType>3</idMeasureType><idPerson>2</idPerson><mid>1</mid><type>HEIGHT</type><value>123.0</value></measureType></healthProfile></person><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>3</idPerson><lastname>Norris</lastname></person><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>600</idPerson><lastname>Norris</lastname></person><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>1233</idPerson><lastname>Norris</lastname></person><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>1253</idPerson><lastname>Norris</lastname></person><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>1333</idPerson><lastname>Norris</lastname></person></people>Request #1: GET http://127.0.1.1:5700/assignment2/person/1 Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><person><birthdate>02/09/1978</birthdate><firstname>Armando</firstname><idPerson>1</idPerson><lastname>Chan</lastname><healthProfile><measureType><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>3</mid><type>height</type><value>12.0</value></measureType></healthProfile></person>Request #3: PUT http://127.0.1.1:5700/assignment2/<person><birthdate>02/09/1978</birthdate><firstname>Armando</firstname><idPerson>1</idPerson><lastname>Chan</lastname></person> Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: ERROR
+=> HTTP Status: 201
+

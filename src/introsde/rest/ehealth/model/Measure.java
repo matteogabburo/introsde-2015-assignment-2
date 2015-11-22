@@ -1,10 +1,9 @@
 package introsde.rest.ehealth.model;
 
-import introsde.rest.ehealth.dao.LifeCoachDao;
-
 import java.io.Serializable;
-import java.util.List;
 import java.util.Date;
+import java.util.List;
+
 import javax.persistence.Column;
 import javax.persistence.Entity;
 import javax.persistence.EntityManager;
@@ -16,11 +15,11 @@ import javax.persistence.ManyToOne;
 import javax.persistence.NamedQuery;
 import javax.persistence.Table;
 import javax.persistence.TableGenerator;
-import javax.xml.bind.annotation.XmlRootElement;
-import javax.xml.bind.annotation.XmlTransient;
-import javax.persistence.OneToOne;
 import javax.persistence.Temporal;
 import javax.persistence.TemporalType;
+import javax.xml.bind.annotation.XmlRootElement;
+
+import introsde.rest.ehealth.dao.LifeCoachDao;
 
 
 /**
@@ -52,7 +51,7 @@ public class Measure implements Serializable {
 
 	@ManyToOne
 	@JoinColumn(name="idMeasureType",referencedColumnName="idMeasureType", insertable=false, updatable=false)
-	private MeasureType measureType;
+	private MeasureType healthProfile;
 
 	public Measure() {}
 
@@ -63,8 +62,8 @@ public class Measure implements Serializable {
 	public void setDate(Date date) {this.date = date;}
 	public float getValue() {return this.value;}
 	public void setValue(float value) {this.value = value;}
-	public MeasureType getMeasureType() {return this.measureType;}
-	public void setMeasureType(MeasureType param) {this.measureType = param;}
+	public MeasureType getMeasureType() {return this.healthProfile;}
+	public void setMeasureType(MeasureType param) {this.healthProfile = param;}
 	
 	// Database operations
 	// Notice that, for this example, we create and destroy and entityManager on each operation. 
