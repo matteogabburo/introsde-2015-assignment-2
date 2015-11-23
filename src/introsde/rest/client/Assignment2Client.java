@@ -22,6 +22,8 @@ public class Assignment2Client {
 	static String LOGNAME_XML = "log/client-server-xml.log";
 	static String LOGNAME_JSON = "log/client-server-json.log";
 
+	public String[] measure_types;
+
 	public static void main(String[] args) throws IOException {
 		ClientConfig clientConfig = new ClientConfig();
 		Client client = ClientBuilder.newClient(clientConfig);
@@ -35,8 +37,13 @@ public class Assignment2Client {
 		String r3 = "person/1";
 		String r4 = "person";
 		String r5 = "person/555";//Look at r4_body_json for 555
-		String r6 = "person/measureTypes";
+		String r6 = "measureTypes";
 		String r7 = "person/";
+		String r8 = "person/1/height/1";
+
+		//r9 sequence
+		String r9_1 = "person/1/height";
+		String r9_2 = "person/1/height";//POST, remember to add measureType.count
 
 		String r3_body_json = "{"
 		+"\"idPerson\": 1,"
@@ -78,34 +85,65 @@ public class Assignment2Client {
 		+"]"
 		+"}";
 
+		String r9_body_xml =     "<healthProfile>"
+		+   "<date>09/12/2011</date>"
+		+   "<idMeasureType>65</idMeasureType>"
+		+   "<idPerson>1</idPerson>"
+		+   "<mid>8</mid>"
+		+   "<type>height</type>"
+		+   "<value>12.0</value>"
+		+"</healthProfile>";
+
 		String xmlResp = "";
 		String jsonResp = "";
 
 		Assignment2Client r = new Assignment2Client();
 
 		System.out.println("\n\n============================== REQUEST 1 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 1 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 1 ==========================\n";
 		xmlResp += r.sendR1_xml(service, r1);
 		jsonResp += r.sendR1_json(service, r1);
 		System.out.println("\n\n============================== REQUEST 2 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 2 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 2 ==========================\n";
 		xmlResp += r.sendR2_xml(service, r2);
 		jsonResp += r.sendR2_json(service, r2);
 		System.out.println("\n\n============================== REQUEST 3 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 3 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 3 ==========================\n";
 		//Changefirstname
 		//String r3_body = r.getPerson(service, r2);		
 		jsonResp += r.sendR3_json(service, r3, r3_body_json);
 		xmlResp += r.sendR3_xml(service, r3, r3_body_xml);
 		System.out.println("\n\n============================== REQUEST 4 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 4 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 4 ==========================\n";
 		jsonResp += r.sendR4_json(service, r4, r4_body_json);
 		//xmlResp += r.sendR4_xml(service, r4, r4_body_xml);
 		System.out.println("\n\n============================== REQUEST 5 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 5 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 5 ==========================\n";
 		jsonResp += r.sendR5_json(service, r5);
 		//xmlResp += r.sendR4_xml(service, r4, r4_body_xml);
 		System.out.println("\n\n============================== REQUEST 6 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 6 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 6 ==========================\n";
 
-		String measure_types[] = new String[0];
-		jsonResp += r.sendR9(service, r6, measure_types);
+		xmlResp += r.sendR9_xml(service, r6);
 		System.out.println("\n\n============================== REQUEST 7 ==========================\n");
-		jsonResp += r.sendR6_json(service, r7, firstPerson, lastPerson, measure_types);
+		xmlResp += "\n\n============================== REQUEST 7 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 7 ==========================\n";
+		jsonResp += r.sendR6_json(service, r7, firstPerson, lastPerson);
+		System.out.println("\n\n============================== REQUEST 8 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 8 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 8 ==========================\n";
+		xmlResp += r.sendR7_xml(service, r8);
+		System.out.println("\n\n============================== REQUEST 9 ==========================\n");
+		xmlResp += "\n\n============================== REQUEST 9 ==========================\n";
+		jsonResp += "\n\n============================== REQUEST 9 ==========================\n";
+		xmlResp += r.sendR6AndR8_xml_r9(service, r9_1,r9_2, r9_body_xml);
+
 
 		r.makeLogs(xmlResp, jsonResp);
 	}
@@ -134,6 +172,24 @@ public class Assignment2Client {
 		b.flush();
 	}
 
+	private int countOccourence(String text, String token)
+	{
+		int counter = 0;
+		int lastIndex = 0;
+
+		while(lastIndex != -1){
+
+			lastIndex = text.indexOf(token,lastIndex);
+
+			if(lastIndex != -1){
+				counter ++;
+				lastIndex += token.length();
+			}
+		}
+
+		return counter;
+	}
+
 	private String countPerson(String body) 
 	{
 		//Count Person in the response, if there are much than 2 people the 
@@ -141,11 +197,8 @@ public class Assignment2Client {
 		String result = "";
 
 		String token = "firstname"; //beacause thi is a field present only in Person
-		int counter = 0;
-		StringTokenizer st = new StringTokenizer(body, token);
-
-		counter = st.countTokens();
-
+		int counter = countOccourence(body, token);
+		
 		if(counter > 2)
 			result = "OK";
 		else
@@ -156,12 +209,13 @@ public class Assignment2Client {
 
 	private int countTypes(String body) 
 	{
-		String token = "<type"; //beacause thi is a field present only in Person
-		int counter = 0;
-		StringTokenizer st = new StringTokenizer(body, token);
+		String token = "</type"; //for xml
+		String token1 = ",";
 
-		counter = st.countTokens();
-		
+		int counter = countOccourence(body, token);
+		if(counter == 0)
+			counter = countOccourence(body, token1) + 1;
+
 		return counter;
 	}
 
@@ -170,7 +224,7 @@ public class Assignment2Client {
 	{
 		String res = "";
 
-		res += "Request #"+number+": "+httpMethod+" "+url+" Accept: "+type+" content-type: "+contentType;
+		res += "\n\nRequest #"+number+": "+httpMethod+" "+url+" Accept: "+type+" content-type: "+contentType;
 		res += "\n=> Result: "+ result;
 		res += "\n=> HTTP Status: "+ status;
 		res += "\n\n";
@@ -387,7 +441,7 @@ public class Assignment2Client {
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 404 || status == 200)
+		if(status == 404 || status == 200 || status == 204)
 			result = "OK";
 		else
 			result = "ERROR";
@@ -398,7 +452,7 @@ public class Assignment2Client {
 		return printableResponse;
 	}
 
-	private String sendR9(WebTarget service, String req, String[] measure_types)
+	private String sendR9_xml(WebTarget service, String req)
 	{
 		Response response;
 		String printableResponse;
@@ -407,17 +461,23 @@ public class Assignment2Client {
 		String result;
 
 		//Accept: applicationjson
-		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).get();
+		response = service.path(req).request().accept(MediaType.APPLICATION_XML).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		int counter = countTypes(body);
+
+		System.out.println("=============================================");		
+		System.out.println(body);
+		System.out.println("=============================================");
+
+
 		if(counter > 2)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		measure_types = new String[counter];
+		this.measure_types = new String[counter];
 
 		//parse body
 		String token1 = "<type>";
@@ -425,21 +485,22 @@ public class Assignment2Client {
 
 		int pos1;
 		int pos2;
+
 		for(int i = 0; i < counter; i++)
 		{
 			pos1 = body.indexOf(token1);
 			pos2 = body.indexOf(token2);
 
-			measure_types[i] = body.substring(pos1 + token1.length(), pos2);
+			this.measure_types[i] = body.substring(pos1 + token1.length(), pos2);
 		}
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 	
-	private String sendR6_json(WebTarget service, String req, int firstname, int lastname, String[] measure_types)
+	private String sendR6_json(WebTarget service, String req, int firstname, int lastname)
 	{
 		Response response;
 		String printableResponse = "";
@@ -447,40 +508,124 @@ public class Assignment2Client {
 		String body = "";
 		String result;
 
-		result = countPerson(body);
-
-		for(int i = 0; i < measure_types.length; i++)
+		for(int i = 0; i < this.measure_types.length; i++)
 		{
-			response = service.path(req +firstname+"/"+measure_types[i]).request().accept(MediaType.APPLICATION_JSON).get();
+			response = service.path(req +firstname+"/"+this.measure_types[i]).request().accept(MediaType.APPLICATION_JSON).get();
 			status = response.getStatus();
 			body = response.readEntity(String.class);
 			
+			if(status == 200)
+				result = "OK";
+			else
+				result = "ERROR";
+
 			printableResponse += makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
 			System.out.println(printableResponse);
 		}
 
-		for(int i = 0; i < measure_types.length; i++)
+		for(int i = 0; i < this.measure_types.length; i++)
 		{
-			response = service.path(req +lastname+"/"+measure_types[i]).request().accept(MediaType.APPLICATION_JSON).get();
+			response = service.path(req +lastname+"/"+this.measure_types[i]).request().accept(MediaType.APPLICATION_JSON).get();
 			status = response.getStatus();
 			body = response.readEntity(String.class);
 			
+			if(status == 200)
+				result = "OK";
+			else
+				result = "ERROR";
+
 			printableResponse += makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
 			System.out.println(printableResponse);
 		}
 
 		//TODO INSERIRE CONTROLLO PER OK SU TUTTE LE RICHIESTE
+
+
 		return printableResponse;
 	}
 
-	/*private void sendR3(WebTarget service)
-	{}
-	private void sendR4(WebTarget service)
-	{}
-	private void sendR5(WebTarget service)
-	{}
-	private void sendR9(WebTarget service)
-	{}*/
+
+	private String sendR7_xml(WebTarget service, String req)
+	{
+		Response response;
+		String printableResponse;
+		int status;
+		String body = ""; 
+		String result;
+
+		//Accept: applicationxml
+		response = service.path(req).request().accept(MediaType.APPLICATION_XML).get();
+		status = response.getStatus();
+		body = response.readEntity(String.class);
+
+		if(status == 200)
+			result = "OK";
+		else
+			result = "ERROR";
+
+		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		System.out.println(printableResponse);
+		
+
+		return printableResponse;
+	}
+
+	private String sendR6AndR8_xml_r9(WebTarget service, String req1, String req2, String req2_body)
+	{
+		Response response;
+		String printableResponse;
+		int status;
+		String body = ""; 
+		String result;
+
+		//Accept: applicationxml
+		response = service.path(req1).request().accept(MediaType.APPLICATION_XML).get();
+		status = response.getStatus();
+		body = response.readEntity(String.class);
+
+		if(status == 200)
+			result = "OK";
+		else
+			result = "ERROR";
+
+		printableResponse = makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		System.out.println(printableResponse);
+		
+
+		int counter = countOccourence(body, "idMeasureType");
+
+		//Accept: application xml
+		response = service.path(req2).request().accept(MediaType.APPLICATION_XML).post(Entity.xml(req2_body));
+		status = response.getStatus();
+		body = response.readEntity(String.class);
+
+		Assignment2Client r = new Assignment2Client();
+
+		if(status == 202 || status == 200 || status == 201)
+			result = "OK";
+		else
+			result = "ERROR";
+
+		printableResponse += makeStringInfo(9, "POST", Assignment2Client.URI + req2, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		System.out.println(printableResponse);
 
 
+		//Accept: applicationxml
+		response = service.path(req1).request().accept(MediaType.APPLICATION_XML).get();
+		status = response.getStatus();
+		body = response.readEntity(String.class);
+
+		if(status == 200)
+			result = "OK";
+		else
+			result = "ERROR";
+
+		printableResponse += makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		System.out.println(printableResponse);
+		
+
+		counter = countOccourence(body, "idMeasureType");
+
+		return printableResponse;
+	}
 }
