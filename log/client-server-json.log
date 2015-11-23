@@ -1,0 +1,124 @@
+
+
+============================== REQUEST 1 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idPerson":1,"lastname":"Chan","firstname":"Armando","birthdate":"02/09/1978","measureType":[{"idMeasureType":60,"idPerson":1,"mid":5,"type":"height","value":12.0,"date":"06/10/1978"},{"idMeasureType":61,"idPerson":1,"mid":1,"type":"steps","value":56.0,"date":"02/09/1978"},{"idMeasureType":2,"idPerson":1,"mid":1,"type":"weight","value":34.0,"date":"29/08/1978"}]},{"idPerson":2,"lastname":"Arturo","firstname":"Jecky","birthdate":"02/09/1978"},{"idPerson":3,"lastname":"Norris","firstname":"Chuck","birthdate":"29/04/0006"}]
+
+============================== REQUEST 2 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1 Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+{"idPerson":1,"lastname":"Chan","firstname":"Armando","birthdate":"02/09/1978","measureType":[{"idMeasureType":60,"idPerson":1,"mid":5,"type":"height","value":12.0,"date":"06/10/1978"},{"idMeasureType":61,"idPerson":1,"mid":1,"type":"steps","value":56.0,"date":"02/09/1978"},{"idMeasureType":2,"idPerson":1,"mid":1,"type":"weight","value":34.0,"date":"29/08/1978"}]}
+
+============================== REQUEST 3 ==========================
+
+
+Request #3: PUT http://127.0.1.1:5700/assignment2/{"idPerson": 1,"lastname": "Chan","firstname": "Melchiorre","birthdate": "02/09/1978"} Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 201
+
+
+
+============================== REQUEST 4 ==========================
+
+
+Request #4: POST http://127.0.1.1:5700/assignment2/ {"idPerson" : 555, "firstname"     : "Chuck","lastname"      : "Norris","birthdate"     : "1945/01/01","measureType" :[         		    {                    "idMeasureType": 88,                    "idPerson": 555,                    "mid": 1,                    "type": "weight",                    "value": 78.9,                    "date": "02/09/1978"                  },                  {                    "idMeasureType": 89,                    "idPerson": 555,                    "mid": 1,                    "type": "height",                    "value": 172.0,                    "date": "02/09/1978"                  }]} Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+{"idPerson":555,"lastname":"Norris","firstname":"Chuck","birthdate":"29/04/0006","measureType":[{"idMeasureType":88,"idPerson":555,"mid":1,"type":"weight","value":78.9,"date":"02/09/1978"}]}
+
+============================== REQUEST 5 ==========================
+
+
+Request #1: DELETE http://127.0.1.1:5700/assignment2/person/555 Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 204
+
+
+
+============================== REQUEST 6 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/measureTypes Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+,"weight"
+
+============================== REQUEST 7 ==========================
+
+
+Request #7: GET http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idMeasureType":1,"idPerson":1,"mid":1,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":5,"idPerson":1,"mid":2,"type":"height","value":23.0,"date":"02/09/1978"},{"idMeasureType":14,"idPerson":1,"mid":3,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":15,"idPerson":1,"mid":4,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":60,"idPerson":1,"mid":5,"type":"height","value":12.0,"date":"06/10/1978"}]
+
+Request #7: GET http://127.0.1.1:5700/assignment2/person/1/steps Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idMeasureType":61,"idPerson":1,"mid":1,"type":"steps","value":56.0,"date":"02/09/1978"}]
+
+Request #7: GET http://127.0.1.1:5700/assignment2/person/1/weight Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idMeasureType":2,"idPerson":1,"mid":1,"type":"weight","value":34.0,"date":"29/08/1978"}]
+
+Request #7: GET http://127.0.1.1:5700/assignment2/person/3/height Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[]
+
+Request #7: GET http://127.0.1.1:5700/assignment2/person/3/steps Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[]
+
+Request #7: GET http://127.0.1.1:5700/assignment2/person/3/weight Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[]
+
+============================== REQUEST 8 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1/height/1 Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idMeasureType":1,"idPerson":1,"mid":1,"type":"height","value":12.0,"date":"02/09/1978"}]
+
+============================== REQUEST 9 ==========================
+
+
+Request #9: GET http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idMeasureType":1,"idPerson":1,"mid":1,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":5,"idPerson":1,"mid":2,"type":"height","value":23.0,"date":"02/09/1978"},{"idMeasureType":14,"idPerson":1,"mid":3,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":15,"idPerson":1,"mid":4,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":60,"idPerson":1,"mid":5,"type":"height","value":12.0,"date":"06/10/1978"}]
+
+Request #9: POST http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+{"idMeasureType":65,"idPerson":1,"mid":8,"type":"height","value":12.0,"date":"09/12/2011"}
+
+Request #9: GET http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/JSON content-type: APPLICATION/JSON
+=> Result: OK
+=> HTTP Status: 200
+
+[{"idMeasureType":1,"idPerson":1,"mid":1,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":5,"idPerson":1,"mid":2,"type":"height","value":23.0,"date":"02/09/1978"},{"idMeasureType":14,"idPerson":1,"mid":3,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":15,"idPerson":1,"mid":4,"type":"height","value":12.0,"date":"02/09/1978"},{"idMeasureType":60,"idPerson":1,"mid":5,"type":"height","value":12.0,"date":"06/10/1978"},{"idMeasureType":65,"idPerson":1,"mid":8,"type":"height","value":12.0,"date":"09/12/2011"}]

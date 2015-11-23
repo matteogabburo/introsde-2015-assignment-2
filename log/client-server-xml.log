@@ -1,0 +1,124 @@
+
+
+============================== REQUEST 1 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><people><person><birthdate>02/09/1978</birthdate><firstname>Melchiorre</firstname><idPerson>1</idPerson><lastname>Chan</lastname><healthProfile><measureType><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>5</mid><type>height</type><value>12.0</value></measureType><measureType><date>02/09/1978</date><idMeasureType>61</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>steps</type><value>56.0</value></measureType><measureType><date>29/08/1978</date><idMeasureType>2</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>weight</type><value>34.0</value></measureType></healthProfile></person><person><birthdate>02/09/1978</birthdate><firstname>Jecky</firstname><idPerson>2</idPerson><lastname>Arturo</lastname></person><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>3</idPerson><lastname>Norris</lastname></person></people>
+
+============================== REQUEST 2 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1 Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><person><birthdate>02/09/1978</birthdate><firstname>Melchiorre</firstname><idPerson>1</idPerson><lastname>Chan</lastname><healthProfile><measureType><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>5</mid><type>height</type><value>12.0</value></measureType><measureType><date>02/09/1978</date><idMeasureType>61</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>steps</type><value>56.0</value></measureType><measureType><date>29/08/1978</date><idMeasureType>2</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>weight</type><value>34.0</value></measureType></healthProfile></person>
+
+============================== REQUEST 3 ==========================
+
+
+Request #3: PUT http://127.0.1.1:5700/assignment2/<person><birthdate>02/09/1978</birthdate><firstname>Armando</firstname><idPerson>1</idPerson><lastname>Chan</lastname></person> Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 201
+
+
+
+============================== REQUEST 4 ==========================
+
+
+Request #4: POST http://127.0.1.1:5700/assignment2/<person><birthdate>1945/01/01</birthdate><firstname>Chuck</firstname><idPerson>555</idPerson><lastname>Norris</lastname><measureType><healthProfile><date>02/09/1978</date><idMeasureType>88</idMeasureType><idPerson>555</idPerson><mid>1</mid><type>weight</type><value>78.9</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>89</idMeasureType><idPerson>555</idPerson><mid>1</mid><type>height</type><value>172.0</value></healthProfile></measureType></person> Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><person><birthdate>29/04/0006</birthdate><firstname>Chuck</firstname><idPerson>555</idPerson><lastname>Norris</lastname></person>
+
+============================== REQUEST 5 ==========================
+
+
+Request #1: DELETE http://127.0.1.1:5700/assignment2/person/555 Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 204
+
+
+
+============================== REQUEST 6 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/measureTypes Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+</MeasureTypes>
+
+============================== REQUEST 7 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes><healthProfile><date>02/09/1978</date><idMeasureType>1</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>5</idMeasureType><idPerson>1</idPerson><mid>2</mid><type>height</type><value>23.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>14</idMeasureType><idPerson>1</idPerson><mid>3</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>15</idMeasureType><idPerson>1</idPerson><mid>4</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>5</mid><type>height</type><value>12.0</value></healthProfile></measureTypes>
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1/steps Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes><healthProfile><date>02/09/1978</date><idMeasureType>61</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>steps</type><value>56.0</value></healthProfile></measureTypes>
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1/weight Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes><healthProfile><date>29/08/1978</date><idMeasureType>2</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>weight</type><value>34.0</value></healthProfile></measureTypes>
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/3/height Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes></measureTypes>
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/3/steps Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes></measureTypes>
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/3/weight Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes></measureTypes>
+
+============================== REQUEST 8 ==========================
+
+
+Request #1: GET http://127.0.1.1:5700/assignment2/person/1/height/1 Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes><healthProfile><date>02/09/1978</date><idMeasureType>1</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>height</type><value>12.0</value></healthProfile></measureTypes>
+
+============================== REQUEST 9 ==========================
+
+
+Request #9: GET http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes><healthProfile><date>02/09/1978</date><idMeasureType>1</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>5</idMeasureType><idPerson>1</idPerson><mid>2</mid><type>height</type><value>23.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>14</idMeasureType><idPerson>1</idPerson><mid>3</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>15</idMeasureType><idPerson>1</idPerson><mid>4</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>5</mid><type>height</type><value>12.0</value></healthProfile></measureTypes>
+
+Request #9: POST http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><healthProfile><date>09/12/2011</date><idMeasureType>65</idMeasureType><idPerson>1</idPerson><mid>8</mid><type>height</type><value>12.0</value></healthProfile>
+
+Request #9: GET http://127.0.1.1:5700/assignment2/person/1/height Accept: APPLICATION/XML content-type: APPLICATION/XML
+=> Result: OK
+=> HTTP Status: 200
+
+<?xml version="1.0" encoding="UTF-8" standalone="yes"?><measureTypes><healthProfile><date>02/09/1978</date><idMeasureType>1</idMeasureType><idPerson>1</idPerson><mid>1</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>5</idMeasureType><idPerson>1</idPerson><mid>2</mid><type>height</type><value>23.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>14</idMeasureType><idPerson>1</idPerson><mid>3</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>02/09/1978</date><idMeasureType>15</idMeasureType><idPerson>1</idPerson><mid>4</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>06/10/1978</date><idMeasureType>60</idMeasureType><idPerson>1</idPerson><mid>5</mid><type>height</type><value>12.0</value></healthProfile><healthProfile><date>09/12/2011</date><idMeasureType>65</idMeasureType><idPerson>1</idPerson><mid>8</mid><type>height</type><value>12.0</value></healthProfile></measureTypes>
