@@ -7,13 +7,16 @@ import javax.persistence.PersistenceContext;
 import javax.persistence.PersistenceContextType;
 import javax.persistence.PersistenceUnit;
 import javax.ws.rs.GET;
+import javax.ws.rs.DELETE;
 import javax.ws.rs.Path;
+import javax.ws.rs.PathParam;
 import javax.ws.rs.Produces;
 import javax.ws.rs.core.Context;
 import javax.ws.rs.core.MediaType;
 import javax.ws.rs.core.Request;
 import javax.ws.rs.core.UriInfo;
 
+import introsde.rest.ehealth.model.MeasureType;
 import introsde.rest.ehealth.model.MeasureTypeList;
 
 @Stateless // will work only inside a Java EE application
@@ -43,5 +46,15 @@ public class MeasureTypeResource {
         System.out.println("Getting list of MeasureType...");
         
         return MeasureTypeList.getTypeList();
+    }
+
+    @DELETE
+    @Path("{idMeasure}")
+    public void deleteMeasureType(@PathParam("idMeasure") int id) {
+        MeasureType c = MeasureType.getMeasureTypeById(id);
+        if (c == null)
+            throw new RuntimeException("Delete: MeasureType with " + id
+                + " not found");
+        MeasureType.removeMeasureType(c);
     }
 }

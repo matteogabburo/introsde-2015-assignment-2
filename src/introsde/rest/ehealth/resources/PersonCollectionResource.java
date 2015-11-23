@@ -50,7 +50,6 @@ public class PersonCollectionResource {
         System.out.println("Getting list of people...");
         List<Person> people = Person.getAll();
 
-
         System.out.println("People ========================================================");
         Iterator<Person> it;
         it = people.iterator();
