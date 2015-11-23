@@ -17,10 +17,10 @@ import org.glassfish.jersey.client.ClientConfig;
 
 public class Assignment2Client {
 
-	static String URI = "http://127.0.1.1:5700/assignment2/";
+	static String URI = "https://shrouded-hollows-4174.herokuapp.com/assignment2/";
 
-	static String LOGNAME_XML = "log/client-server-xml.log";
-	static String LOGNAME_JSON = "log/client-server-json.log";
+	static String LOGNAME_XML = "client-server-xml.log";
+	static String LOGNAME_JSON = "client-server-json.log";
 
 	public String[] measure_types;
 
@@ -131,6 +131,10 @@ public class Assignment2Client {
 
 		String xmlResp = "";
 		String jsonResp = "";
+
+
+		System.out.println("URL SERVER : " + Assignment2Client.URI);
+
 
 		Assignment2Client r = new Assignment2Client();
 
@@ -357,7 +361,7 @@ public class Assignment2Client {
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse = makeStringInfo(2, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
 		System.out.println(printableResponse);
 		
 
@@ -382,7 +386,7 @@ public class Assignment2Client {
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(2, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
@@ -520,7 +524,7 @@ public class Assignment2Client {
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(1, "DELETE", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(5, "DELETE", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
@@ -552,7 +556,7 @@ public class Assignment2Client {
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(1, "DELETE", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse = makeStringInfo(5, "DELETE", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
@@ -603,7 +607,7 @@ public class Assignment2Client {
 		}
 
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse = makeStringInfo(6, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
@@ -656,8 +660,7 @@ public class Assignment2Client {
 			}
 		}
 
-		System.out.println("\n\n\n\n"+counter+"\n\n\n\n");
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(6, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
@@ -769,7 +772,7 @@ public class Assignment2Client {
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse = makeStringInfo(8, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
 		System.out.println(printableResponse);
 		
 
@@ -794,7 +797,7 @@ public class Assignment2Client {
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON",result ,status ,body);
+		printableResponse = makeStringInfo(8, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON",result ,status ,body);
 		System.out.println(printableResponse);
 		
 

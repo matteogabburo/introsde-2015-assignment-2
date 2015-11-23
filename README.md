@@ -1,3 +1,7 @@
-#Assignment 2
+#Assignment 2 introsde
 
-###TODO
+- I worked alone
+
+- URL of my server : https://shrouded-hollows-4174.herokuapp.com/assignment2/
+
+
