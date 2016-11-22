@@ -2,6 +2,6 @@
 
 - I worked alone
 
-- URL of my server : https://shrouded-hollows-4174.herokuapp.com/assignment2/
+- URL of my server : https://introsdelabgabburomatteo.herokuapp.com/assignment2/
 
 
