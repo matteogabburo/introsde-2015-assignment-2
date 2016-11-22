@@ -1,24 +1,38 @@
 package introsde.rest.client;
 
+import java.io.BufferedWriter;
+import java.io.FileWriter;
+import java.io.IOException;
+import java.io.StringReader;
+import java.io.StringWriter;
 import java.net.URI;
 
 import javax.ws.rs.client.Client;
 import javax.ws.rs.client.ClientBuilder;
+import javax.ws.rs.client.Entity;
 import javax.ws.rs.client.WebTarget;
 import javax.ws.rs.core.MediaType;
-import javax.ws.rs.core.UriBuilder;
 import javax.ws.rs.core.Response;
-import javax.ws.rs.client.Entity;
-
-import java.io.*;
-import java.util.StringTokenizer;
+import javax.ws.rs.core.UriBuilder;
+import javax.xml.transform.OutputKeys;
+import javax.xml.transform.Source;
+import javax.xml.transform.Transformer;
+import javax.xml.transform.TransformerFactory;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.transform.stream.StreamSource;
 
 import org.glassfish.jersey.client.ClientConfig;
 
+import com.fasterxml.jackson.core.JsonParseException;
+import com.fasterxml.jackson.databind.JsonMappingException;
+import com.fasterxml.jackson.databind.ObjectMapper;
+import com.fasterxml.jackson.databind.SerializationFeature;
+
 public class Assignment2Client {
 
-	static String URI = "https://shrouded-hollows-4174.herokuapp.com/assignment2/";
-
+	//static String URI = "http://introsdelabgabburomatteo/assignment2/";
+	static String URI = "https://introsdelabgabburomatteo.herokuapp.com/assignment2/";
+	
 	static String LOGNAME_XML = "client-server-xml.log";
 	static String LOGNAME_JSON = "client-server-json.log";
 
@@ -30,7 +44,7 @@ public class Assignment2Client {
 		WebTarget service = client.target(getBaseURI());
 
 		int firstPerson = 1;
-		int lastPerson = 3; //TODO DINAMICO 
+		int lastPerson = 3; // TODO DINAMICO
 
 		String r1 = "person";
 		String r2 = "person/1";
@@ -132,13 +146,11 @@ public class Assignment2Client {
 		String xmlResp = "";
 		String jsonResp = "";
 
-
 		System.out.println("URL SERVER : " + Assignment2Client.URI);
-
 
 		Assignment2Client r = new Assignment2Client();
 
-		//JSON
+		// JSON
 		System.out.println("\n\n============================== REQUEST 1 ==========================\n");
 		jsonResp += "\n\n============================== REQUEST 1 ==========================\n";
 		jsonResp += r.sendR1_json(service, r1);
@@ -147,8 +159,8 @@ public class Assignment2Client {
 		jsonResp += r.sendR2_json(service, r2);
 		System.out.println("\n\n============================== REQUEST 3 ==========================\n");
 		jsonResp += "\n\n============================== REQUEST 3 ==========================\n";
-		//Changefirstname
-		//String r3_body = r.getPerson(service, r2);		
+		// Changefirstname
+		// String r3_body = r.getPerson(service, r2);
 		jsonResp += r.sendR3_json(service, r3, r3_body_json);
 		System.out.println("\n\n============================== REQUEST 4 ==========================\n");
 		jsonResp += "\n\n============================== REQUEST 4 ==========================\n";
@@ -167,10 +179,10 @@ public class Assignment2Client {
 		jsonResp += r.sendR7_json(service, r8);
 		System.out.println("\n\n============================== REQUEST 9 ==========================\n");
 		jsonResp += "\n\n============================== REQUEST 9 ==========================\n";
-		jsonResp += r.sendR6AndR8_json_r9(service, r9_1,r9_2, r9_body_json);
+		jsonResp += r.sendR6AndR8_json_r9(service, r9_1, r9_2, r9_body_json);
 		r.deleteR9(service, deleteR9);
 
-		//XML
+		// XML
 		System.out.println("\n\n============================== REQUEST 1 ==========================\n");
 		xmlResp += "\n\n============================== REQUEST 1 ==========================\n";
 		xmlResp += r.sendR1_xml(service, r1);
@@ -197,7 +209,7 @@ public class Assignment2Client {
 		xmlResp += r.sendR7_xml(service, r8);
 		System.out.println("\n\n============================== REQUEST 9 ==========================\n");
 		xmlResp += "\n\n============================== REQUEST 9 ==========================\n";
-		xmlResp += r.sendR6AndR8_xml_r9(service, r9_1,r9_2, r9_body_xml);
+		xmlResp += r.sendR6AndR8_xml_r9(service, r9_1, r9_2, r9_body_xml);
 		r.deleteR9(service, deleteR9);
 
 		r.makeLogs(xmlResp, jsonResp);
@@ -217,27 +229,26 @@ public class Assignment2Client {
 		BufferedWriter b;
 
 		System.out.println("Writing xml logs...");
-		b=new BufferedWriter (logxml);
+		b = new BufferedWriter(logxml);
 		b.write(xmlResp);
 		b.flush();
 
 		System.out.println("Writing json logs...");
-		b=new BufferedWriter (logjson);
+		b = new BufferedWriter(logjson);
 		b.write(jsonResp);
 		b.flush();
 	}
 
-	private int countOccourence(String text, String token)
-	{
+	private int countOccourence(String text, String token) {
 		int counter = 0;
 		int lastIndex = 0;
 
-		while(lastIndex != -1){
+		while (lastIndex != -1) {
 
-			lastIndex = text.indexOf(token,lastIndex);
+			lastIndex = text.indexOf(token, lastIndex);
 
-			if(lastIndex != -1){
-				counter ++;
+			if (lastIndex != -1) {
+				counter++;
 				lastIndex += token.length();
 			}
 		}
@@ -245,164 +256,177 @@ public class Assignment2Client {
 		return counter;
 	}
 
-	private String countPerson(String body) 
-	{
-		//Count Person in the response, if there are much than 2 people the 
-		//result is OK, else the result is ERROR
+	private String countPerson(String body) {
+		// Count Person in the response, if there are much than 2 people the
+		// result is OK, else the result is ERROR
 		String result = "";
 
-		String token = "firstname"; //beacause thi is a field present only in Person
+		String token = "firstname"; // beacause thi is a field present only in
+									// Person
 		int counter = countOccourence(body, token);
-		
-		if(counter > 2)
+
+		if (counter > 2)
 			result = "OK";
 		else
 			result = "ERROR";
-		
+
 		return result;
 	}
 
-	private int countTypes(String body) 
-	{
-		String token = "</type"; //for xml
+	private int countTypes(String body) {
+		String token = "</type"; // for xml
 		String token1 = ",";
 
 		int counter = countOccourence(body, token);
-		if(counter == 0)
+		if (counter == 0)
 			counter = countOccourence(body, token1) + 1;
 
 		return counter;
 	}
 
-	private String getPerson(WebTarget service, String req)
-	{
+	private String getPerson(WebTarget service, String req) {
 		Response response;
 		String body = "";
-		
-		//Accept: applicationjson
+
+		// Accept: applicationjson
 		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).get();
 		body = response.readEntity(String.class);
 
 		return body;
 	}
 
-	private String makeStringInfo(int number, String httpMethod, String url, String type, 
-		String contentType, String result, int status, String body)
-	{
+	private String makeStringInfo(int number, String httpMethod, String url, String type, String contentType,
+			String result, int status, String body) {
 		String res = "";
 
-		res += "\n\nRequest #"+number+": "+httpMethod+" "+url+" Accept: "+type+" content-type: "+contentType;
-		res += "\n=> Result: "+ result;
-		res += "\n=> HTTP Status: "+ status;
+		res += "\n\nRequest #" + number + ": " + httpMethod + " " + url + " Accept: " + type + " content-type: "
+				+ contentType;
+		res += "\n=> Result: " + result;
+		res += "\n=> HTTP Status: " + status;
 		res += "\n\n";
+
+		// indent body
+		
+		//System.out.println(body);
+		
+		if(body != "")
+			if(body != null)
+				if (isXML(body))
+					body = prettyFormat(body);
+				else if(isJson(body))
+					try {
+						body = prettyJson(body);
+					} catch (IOException e) {
+						// TODO Auto-generated catch block
+						e.printStackTrace();
+					}
+			
 		res += body;
 
 		return res;
 	}
 
-	private String sendR1_xml(WebTarget service, String req)
-	{
+	private String sendR1_xml(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
-		String body = ""; 
+		String body = "";
 		String result;
 
-		//Accept: applicationxml
+		// Accept: applicationxml
 		response = service.path(req).request().accept(MediaType.APPLICATION_XML).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		result = countPerson(body);
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",
+				result, status, body);
+
 		System.out.println(printableResponse);
-		
 
 		return printableResponse;
 	}
 
-	private String sendR1_json(WebTarget service, String req)
-	{
+	private String sendR1_json(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		result = countPerson(body);
 
-		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(1, "GET", Assignment2Client.URI + req, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
-	
-	private String sendR2_xml(WebTarget service, String req)
-	{
+
+	private String sendR2_xml(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
-		String body = ""; 
+		String body = "";
 		String result;
 
-		//Accept: applicationxml
+		// Accept: applicationxml
 		response = service.path(req).request().accept(MediaType.APPLICATION_XML).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 202 || status == 200)
+		if (status == 202 || status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(2, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse = makeStringInfo(2, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",
+				result, status, body);
 		System.out.println(printableResponse);
-		
 
 		return printableResponse;
 	}
 
-	private String sendR2_json(WebTarget service, String req)
-	{
+	private String sendR2_json(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 202 || status == 200)
+		if (status == 202 || status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(2, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(2, "GET", Assignment2Client.URI + req, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR3_json(WebTarget service, String path, String req)
-	{
+	private String sendR3_json(WebTarget service, String path, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 
-		//Response response =  service.request().put(Entity.json(friend));
+		// Response response = service.request().put(Entity.json(friend));
 
 		response = service.path(path).request().accept(MediaType.APPLICATION_JSON).put(Entity.json(req));
 		status = response.getStatus();
@@ -410,30 +434,32 @@ public class Assignment2Client {
 
 		Assignment2Client r = new Assignment2Client();
 
-		//DA CAMBIARE ======================================================================
-		if(status == 201 || status == 202 || status == 200)
+		// DA CAMBIARE
+		// ======================================================================
+		if (status == 201 || status == 202 || status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
-		//==================================================================================
+		// ==================================================================================
 
-		printableResponse = makeStringInfo(3, "PUT", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		
+		printableResponse = makeStringInfo(3, "PUT", Assignment2Client.URI + path, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR3_xml(WebTarget service, String path, String req)
-	{
+	private String sendR3_xml(WebTarget service, String path, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 
-		//Response response =  service.request().put(Entity.json(friend));
+		// Response response = service.request().put(Entity.json(friend));
 
 		response = service.path(path).request().accept(MediaType.APPLICATION_JSON).put(Entity.xml(req));
 		status = response.getStatus();
@@ -441,129 +467,127 @@ public class Assignment2Client {
 
 		Assignment2Client r = new Assignment2Client();
 
-		//DA CAMBIARE ======================================================================
-		if(status == 201  || status == 202 || status == 200)
+		// DA CAMBIARE
+		// ======================================================================
+		if (status == 201 || status == 202 || status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
-		//==================================================================================
+		// ==================================================================================
 
-		printableResponse = makeStringInfo(3, "PUT", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse = makeStringInfo(3, "PUT", Assignment2Client.URI + path, "APPLICATION/XML", "APPLICATION/XML",
+				result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR4_json(WebTarget service, String path, String req)
-	{
+	private String sendR4_json(WebTarget service, String path, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(path).request().accept(MediaType.APPLICATION_JSON).post(Entity.json(req));
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		Assignment2Client r = new Assignment2Client();
 
-		if(status == 202 || status == 200 || status == 201)
+		if (status == 202 || status == 200 || status == 201)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(4, "POST", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(4, "POST", Assignment2Client.URI + path, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR4_xml(WebTarget service, String path, String req)
-	{
+	private String sendR4_xml(WebTarget service, String path, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(path).request().accept(MediaType.APPLICATION_XML).post(Entity.xml(req));
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		Assignment2Client r = new Assignment2Client();
 
-		if(status == 202 || status == 200 || status == 201)
+		if (status == 202 || status == 200 || status == 201)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(4, "POST", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse = makeStringInfo(4, "POST", Assignment2Client.URI + path, "APPLICATION/XML", "APPLICATION/XML",
+				result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR5_json(WebTarget service, String req)
-	{
+	private String sendR5_json(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).delete();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 404 || status == 200 || status == 204)
+		if (status == 404 || status == 200 || status == 204)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(5, "DELETE", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(5, "DELETE", Assignment2Client.URI + req, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-
-	private void deleteR9(WebTarget service, String req)
-	{
+	private void deleteR9(WebTarget service, String req) {
 		Response response;
 		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).delete();
 	}
 
-
-	private String sendR5_xml(WebTarget service, String req)
-	{
+	private String sendR5_xml(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
 		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req).request().accept(MediaType.APPLICATION_XML).delete();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 404 || status == 200 || status == 204)
+		if (status == 404 || status == 200 || status == 204)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(5, "DELETE", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse = makeStringInfo(5, "DELETE", Assignment2Client.URI + req, "APPLICATION/XML",
+				"APPLICATION/XML", result, status, body);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR9_xml(WebTarget service, String req)
-	{
+	private String sendR9_xml(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
@@ -583,6 +607,7 @@ public class Assignment2Client {
 			result = "ERROR";
 
 		this.measure_types = new String[counter];
+		String finalBody = body;
 
 		//parse body
 		String token1 = "<type>";
@@ -607,14 +632,13 @@ public class Assignment2Client {
 		}
 
 
-		printableResponse = makeStringInfo(6, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse = makeStringInfo(6, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,finalBody);
 		System.out.println(printableResponse);
 
-		return printableResponse;
+return printableResponse;
 	}
-	
-	private String sendR9_json(WebTarget service, String req)
-	{
+
+	private String sendR9_json(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
@@ -643,6 +667,7 @@ public class Assignment2Client {
 		int pos2;
 
 		//modify body for parsing
+		String finalBody = body;
 		body = body.substring(body.indexOf("[") + "[".length(), body.indexOf("]"));
 
 		String tmpBody;
@@ -660,269 +685,312 @@ public class Assignment2Client {
 			}
 		}
 
-		printableResponse = makeStringInfo(6, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse = makeStringInfo(6, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,finalBody);
 		System.out.println(printableResponse);
 
 		return printableResponse;
 	}
 
-	private String sendR6_json(WebTarget service, String req, int firstname, int lastname)
-	{
+	private String sendR6_json(WebTarget service, String req, int firstname, int lastname) {
 		Response response;
 		String printableResponse = "";
 		int status;
 		String body = "";
 		String result;
 
-		for(int i = 0; i < this.measure_types.length; i++)
-		{
-			response = service.path(req +firstname+"/"+this.measure_types[i]).request().accept(MediaType.APPLICATION_JSON).get();
+		for (int i = 0; i < this.measure_types.length; i++) {
+			response = service.path(req + firstname + "/" + this.measure_types[i]).request()
+					.accept(MediaType.APPLICATION_JSON).get();
 			status = response.getStatus();
 			body = response.readEntity(String.class);
-			
-			if(status == 200)
+
+			if (status == 200)
 				result = "OK";
 			else
 				result = "ERROR";
 
-			printableResponse += makeStringInfo(7, "GET", Assignment2Client.URI + req+firstname+"/"+this.measure_types[i], "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+			printableResponse += makeStringInfo(7, "GET",
+					Assignment2Client.URI + req + firstname + "/" + this.measure_types[i], "APPLICATION/JSON",
+					"APPLICATION/JSON", result, status, body);
 			System.out.println(printableResponse);
 		}
 
-		for(int i = 0; i < this.measure_types.length; i++)
-		{
-			response = service.path(req +lastname+"/"+this.measure_types[i]).request().accept(MediaType.APPLICATION_JSON).get();
+		for (int i = 0; i < this.measure_types.length; i++) {
+			response = service.path(req + lastname + "/" + this.measure_types[i]).request()
+					.accept(MediaType.APPLICATION_JSON).get();
 			status = response.getStatus();
 			body = response.readEntity(String.class);
-			
-			if(status == 200)
+
+			if (status == 200)
 				result = "OK";
 			else
 				result = "ERROR";
 
-			printableResponse += makeStringInfo(7, "GET", Assignment2Client.URI + req+lastname+"/"+this.measure_types[i], "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+			printableResponse += makeStringInfo(7, "GET",
+					Assignment2Client.URI + req + lastname + "/" + this.measure_types[i], "APPLICATION/JSON",
+					"APPLICATION/JSON", result, status, body);
 			System.out.println(printableResponse);
 		}
 
-		//TODO INSERIRE CONTROLLO PER OK SU TUTTE LE RICHIESTE
-
+		// TODO INSERIRE CONTROLLO PER OK SU TUTTE LE RICHIESTE
 
 		return printableResponse;
 	}
 
-	private String sendR6_xml(WebTarget service, String req, int firstname, int lastname)
-	{
+	private String sendR6_xml(WebTarget service, String req, int firstname, int lastname) {
 		Response response;
 		String printableResponse = "";
 		int status;
 		String body = "";
 		String result;
 
-		for(int i = 0; i < this.measure_types.length; i++)
-		{
-			response = service.path(req +firstname+"/"+this.measure_types[i]).request().accept(MediaType.APPLICATION_XML).get();
+		for (int i = 0; i < this.measure_types.length; i++) {
+			response = service.path(req + firstname + "/" + this.measure_types[i]).request()
+					.accept(MediaType.APPLICATION_XML).get();
 			status = response.getStatus();
 			body = response.readEntity(String.class);
-			
-			if(status == 200)
+
+			if (status == 200)
 				result = "OK";
 			else
 				result = "ERROR";
 
-			printableResponse += makeStringInfo(1, "GET", Assignment2Client.URI + req +firstname+"/"+this.measure_types[i], "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+			printableResponse += makeStringInfo(7, "GET",
+					Assignment2Client.URI + req + firstname + "/" + this.measure_types[i], "APPLICATION/XML",
+					"APPLICATION/XML", result, status, body);
 			System.out.println(printableResponse);
 		}
 
-		for(int i = 0; i < this.measure_types.length; i++)
-		{
-			response = service.path(req +lastname+"/"+this.measure_types[i]).request().accept(MediaType.APPLICATION_XML).get();
+		for (int i = 0; i < this.measure_types.length; i++) {
+			response = service.path(req + lastname + "/" + this.measure_types[i]).request()
+					.accept(MediaType.APPLICATION_XML).get();
 			status = response.getStatus();
 			body = response.readEntity(String.class);
-			
-			if(status == 200)
+
+			if (status == 200)
 				result = "OK";
 			else
 				result = "ERROR";
 
-			printableResponse += makeStringInfo(1, "GET", Assignment2Client.URI + req +lastname+"/"+this.measure_types[i], "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+			printableResponse += makeStringInfo(7, "GET",
+					Assignment2Client.URI + req + lastname + "/" + this.measure_types[i], "APPLICATION/XML",
+					"APPLICATION/XML", result, status, body);
 			System.out.println(printableResponse);
 		}
 
-		//TODO INSERIRE CONTROLLO PER OK SU TUTTE LE RICHIESTE
-
+		// TODO INSERIRE CONTROLLO PER OK SU TUTTE LE RICHIESTE
 
 		return printableResponse;
 	}
 
-	private String sendR7_xml(WebTarget service, String req)
-	{
+	private String sendR7_xml(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
-		String body = ""; 
+		String body = "";
 		String result;
 
-		//Accept: applicationxml
+		// Accept: applicationxml
 		response = service.path(req).request().accept(MediaType.APPLICATION_XML).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 200)
+		if (status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(8, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse = makeStringInfo(8, "GET", Assignment2Client.URI + req, "APPLICATION/XML", "APPLICATION/XML",
+				result, status, body);
 		System.out.println(printableResponse);
-		
 
 		return printableResponse;
 	}
 
-	private String sendR7_json(WebTarget service, String req)
-	{
+	private String sendR7_json(WebTarget service, String req) {
 		Response response;
 		String printableResponse;
 		int status;
-		String body = ""; 
+		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req).request().accept(MediaType.APPLICATION_JSON).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 200)
+		if (status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(8, "GET", Assignment2Client.URI + req, "APPLICATION/JSON", "APPLICATION/JSON",result ,status ,body);
+		printableResponse = makeStringInfo(8, "GET", Assignment2Client.URI + req, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
-		
 
 		return printableResponse;
 	}
 
-	private String sendR6AndR8_xml_r9(WebTarget service, String req1, String req2, String req2_body)
-	{
+	private String sendR6AndR8_xml_r9(WebTarget service, String req1, String req2, String req2_body) {
 		Response response;
 		String printableResponse;
 		int status;
-		String body = ""; 
+		String body = "";
 		String result;
 
-		//Accept: applicationxml
+		// Accept: applicationxml
 		response = service.path(req1).request().accept(MediaType.APPLICATION_XML).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 200)
+		if (status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse = makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/XML", "APPLICATION/XML",
+				result, status, body);
 		System.out.println(printableResponse);
-		
 
 		int counter = countOccourence(body, "idMeasureType");
 
-		//Accept: application xml
+		// Accept: application xml
 		response = service.path(req2).request().accept(MediaType.APPLICATION_XML).post(Entity.xml(req2_body));
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		Assignment2Client r = new Assignment2Client();
 
-		if(status == 202 || status == 200 || status == 201)
+		if (status == 202 || status == 200 || status == 201)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse += makeStringInfo(9, "POST", Assignment2Client.URI + req2, "APPLICATION/XML", "APPLICATION/XML" ,result ,status ,body);
+		printableResponse += makeStringInfo(9, "POST", Assignment2Client.URI + req2, "APPLICATION/XML",
+				"APPLICATION/XML", result, status, body);
 		System.out.println(printableResponse);
 
-
-		//Accept: applicationxml
+		// Accept: applicationxml
 		response = service.path(req1).request().accept(MediaType.APPLICATION_XML).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 200)
+		if (status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse += makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/XML", "APPLICATION/XML",result ,status ,body);
+		printableResponse += makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/XML",
+				"APPLICATION/XML", result, status, body);
 		System.out.println(printableResponse);
-		
 
 		counter = countOccourence(body, "idMeasureType");
 
 		return printableResponse;
 	}
 
-	private String sendR6AndR8_json_r9(WebTarget service, String req1, String req2, String req2_body)
-	{
+	private String sendR6AndR8_json_r9(WebTarget service, String req1, String req2, String req2_body) {
 		Response response;
 		String printableResponse;
 		int status;
-		String body = ""; 
+		String body = "";
 		String result;
 
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req1).request().accept(MediaType.APPLICATION_JSON).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 200)
+		if (status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse = makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/JSON", "APPLICATION/JSON",result ,status ,body);
+		printableResponse = makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
-		
 
 		int counter = countOccourence(body, "idMeasureType");
 
-		//Accept: application json
+		// Accept: application json
 		response = service.path(req2).request().accept(MediaType.APPLICATION_JSON).post(Entity.json(req2_body));
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
 		Assignment2Client r = new Assignment2Client();
 
-		if(status == 202 || status == 200 || status == 201)
+		if (status == 202 || status == 200 || status == 201)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse += makeStringInfo(9, "POST", Assignment2Client.URI + req2, "APPLICATION/JSON", "APPLICATION/JSON" ,result ,status ,body);
+		printableResponse += makeStringInfo(9, "POST", Assignment2Client.URI + req2, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
 
-
-		//Accept: applicationjson
+		// Accept: applicationjson
 		response = service.path(req1).request().accept(MediaType.APPLICATION_JSON).get();
 		status = response.getStatus();
 		body = response.readEntity(String.class);
 
-		if(status == 200)
+		if (status == 200)
 			result = "OK";
 		else
 			result = "ERROR";
 
-		printableResponse += makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/JSON", "APPLICATION/JSON",result ,status ,body);
+		printableResponse += makeStringInfo(9, "GET", Assignment2Client.URI + req1, "APPLICATION/JSON",
+				"APPLICATION/JSON", result, status, body);
 		System.out.println(printableResponse);
-		
 
 		counter = countOccourence(body, "idMeasureType");
 
 		return printableResponse;
 	}
 
+	// EXTRA FUNCTIONS FOR INDENT JSON AND XML RESULTS
+	// =====================================
+	public static String prettyFormat(String input, int indent) {
+		try {
+			Source xmlInput = new StreamSource(new StringReader(input));
+			StringWriter stringWriter = new StringWriter();
+			StreamResult xmlOutput = new StreamResult(stringWriter);
+			TransformerFactory transformerFactory = TransformerFactory.newInstance();
+			transformerFactory.setAttribute("indent-number", indent);
+			Transformer transformer = transformerFactory.newTransformer();
+			transformer.setOutputProperty(OutputKeys.INDENT, "yes");
+			transformer.transform(xmlInput, xmlOutput);
+			return xmlOutput.getWriter().toString();
+		} catch (Exception e) {
+			throw new RuntimeException(e); // simple exception handling, please
+											// review it
+		}
+	}
 
+	public static String prettyFormat(String input) {
+		return prettyFormat(input, 2);
+	}
 
+	public static String prettyJson(String input) throws JsonParseException, JsonMappingException, IOException {
+		ObjectMapper mapper = new ObjectMapper();
+		mapper.enable(SerializationFeature.INDENT_OUTPUT);
+
+		Object json = mapper.readValue(input, Object.class);
+		String indented = mapper.writerWithDefaultPrettyPrinter()
+				.writeValueAsString(json);
+		return indented;
+	}
+
+	public boolean isXML(String body) {
+		if(body.contains("<"))
+			return true;
+		else
+			return false;
+	}
+	public boolean isJson(String body) {
+		if(body.contains("["))
+			return true;
+		else
+			return false;
+	}
 
 }
